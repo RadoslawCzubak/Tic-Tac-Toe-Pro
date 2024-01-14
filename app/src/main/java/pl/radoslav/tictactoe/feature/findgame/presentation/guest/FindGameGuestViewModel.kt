@@ -1,10 +1,9 @@
-package pl.radoslav.tictactoe.feature.findgame.presentation.host
+package pl.radoslav.tictactoe.feature.findgame.presentation.guest
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -13,10 +12,10 @@ import pl.radoslav.tictactoe.feature.findgame.domain.usecase.DiscoverBluetoothDe
 import javax.inject.Inject
 
 @HiltViewModel
-class FindGameHostViewModel @Inject constructor(
+class FindGameGuestViewModel @Inject constructor(
     private val discoverBluetoothDevices: DiscoverBluetoothDevices
 ) : ViewModel() {
-    private val _state by lazy { MutableStateFlow(FindGameHostState()) }
+    private val _state by lazy { MutableStateFlow(FindGameGuestState()) }
     val state = _state.asStateFlow()
 
     private var discoverJob: Job? = null

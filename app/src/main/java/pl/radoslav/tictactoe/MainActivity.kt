@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import pl.radoslav.tictactoe.feature.findgame.presentation.host.FindGameScreen
+import pl.radoslav.tictactoe.feature.findgame.presentation.guest.FindGameScreen
 import pl.radoslav.tictactoe.feature.mainmenu.MainMenuScreen
 import pl.radoslav.tictactoe.ui.theme.TicTacToeTheme
 
