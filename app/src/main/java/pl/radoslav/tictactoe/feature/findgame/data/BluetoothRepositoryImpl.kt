@@ -3,6 +3,7 @@ package pl.radoslav.tictactoe.feature.findgame.data
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
@@ -37,15 +38,17 @@ class BluetoothRepositoryImpl @Inject constructor(
     }
 
     override suspend fun connectToServer(btDevice: BtDevice): Flow<ClientBluetoothEvent> {
-        val bluetoothDevice = bluetoothDevicesCache.find {
-            it.address == btDevice.address
-        } ?: throw IllegalStateException("Device not found")
-        return bluetoothService.connectToServer(
-            bluetoothDevice
-        )
+//        val bluetoothDevice = bluetoothDevicesCache.find {
+//            it.address == btDevice.address
+//        } ?: throw IllegalStateException("Device not found")
+//        return bluetoothService.connectToServer(
+//            bluetoothDevice
+//        )
+        return flow {}
     }
 
     override suspend fun createServer(): Flow<ServerBluetoothEvent> {
-        return bluetoothService.createNewServer()
+//        return bluetoothService.createNewServer()
+        return flow {}
     }
 }
