@@ -36,11 +36,11 @@ class BluetoothRepositoryImpl @Inject constructor(
             }
     }
 
-    override suspend fun connectToServer(btDevice: BtDevice) {
+    override suspend fun connectToServer(btDevice: BtDevice): Flow<ClientBluetoothEvent> {
         val bluetoothDevice = bluetoothDevicesCache.find {
             it.address == btDevice.address
         } ?: throw IllegalStateException("Device not found")
-        bluetoothService.connectToServer(
+        return bluetoothService.connectToServer(
             bluetoothDevice
         )
     }

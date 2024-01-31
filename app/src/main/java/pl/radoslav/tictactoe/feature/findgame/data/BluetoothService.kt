@@ -38,19 +38,7 @@ class BluetoothService @Inject constructor(
     private val bluetoothManager: BluetoothManager,
     private val bluetoothAdapter: BluetoothAdapter,
 ) {
-    private val serverSocket: BluetoothServerSocket? by lazy(LazyThreadSafetyMode.NONE) {
-        bluetoothAdapter.listenUsingRfcommWithServiceRecord(
-            "TicTacToe-Game",
-            UUID.randomUUID()
-        )
-    }
-
-    //    private var connectionSocket: BluetoothSocket? = null
-    private var outputStream: OutputStream? = null
-    private val mmBuffer: ByteArray = ByteArray(1024)
-
     private val bluetoothScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-    private var manageConnectionJob: Job? = null
 
     @OptIn(FlowPreview::class)
     @SuppressLint("MissingPermission")
@@ -78,122 +66,6 @@ class BluetoothService @Inject constructor(
         }.timeout(timeout = 15.seconds)
             .cancellable()
     }
-
-    fun createNewServer(): Flow<ServerBluetoothEvent> {
-        return callbackFlow {
-            val connectionSocket = try {
-                setupServer()
-            } catch (e: Exception) {
-                Log.d("BluetoothService", "Error while setting up server: ${e.message}")
-                trySend(ServerBluetoothEvent.Error(e))
-                null
-            }
-            trySend(ServerBluetoothEvent.ClientConnected)
-            try {
-                connectionSocket?.let {
-                    manageConnection(it)
-                        .onEach { bluetoothMessage ->
-                            trySend(
-                                ServerBluetoothEvent.MessageReceived(
-                                    bluetoothMessage.message,
-                                    bluetoothMessage.bytesRead
-                                )
-                            )
-                        }.catch { error ->
-                            trySend(ServerBluetoothEvent.Error(error))
-                        }
-                } ?: throw IllegalStateException("Connection socket is null")
-            } catch (e: Exception) {
-                Log.d("BluetoothService", "Error while managing connection: ${e.message}")
-                trySend(ServerBluetoothEvent.Error(e))
-            }
-            awaitClose {
-                connectionSocket?.close()
-                disconnect()
-            }
-        }
-    }
-
-    private suspend fun setupServer(): BluetoothSocket? =
-        withContext(Dispatchers.IO) {
-            var isWaiting = true
-            while (isWaiting) {
-                val connectionSocket = try {
-                    serverSocket?.accept()
-                } catch (e: Exception) {
-                    Log.d("BluetoothService", "Error while accepting connection: ${e.message}")
-                    isWaiting = false
-                    return@withContext null
-                }
-                connectionSocket?.also {
-                    serverSocket?.close()
-                    isWaiting = false
-                    return@withContext it
-                }
-            }
-            null
-        }
-
-
-    fun connectToServer(btDevice: BluetoothDevice): Flow<ClientBluetoothEvent> {
-        return callbackFlow {
-            bluetoothAdapter.cancelDiscovery()
-            val connectionSocket = btDevice.createRfcommSocketToServiceRecord(UUID.randomUUID())
-            connectionSocket?.connect()
-            connectionSocket?.let {
-                trySend(ClientBluetoothEvent.ConnectedToServer)
-            }
-            manageConnection(connectionSocket)
-                .onEach { ClientBluetoothEvent.MessageReceived(it.message, it.bytesRead) }
-                .catch { error ->
-                    trySend(ClientBluetoothEvent.Error(error))
-                }
-
-            awaitClose {
-                connectionSocket?.close()
-                disconnect()
-            }
-        }
-    }
-
-
-    private fun manageConnection(connectionSocket: BluetoothSocket): Flow<BluetoothMessage> {
-        val inputStream = connectionSocket.inputStream
-        outputStream = connectionSocket.outputStream
-        val byteBuffer = ByteArray(1024)
-        return callbackFlow {
-            manageConnectionJob = bluetoothScope.launch {
-                while (true) {
-                    val numberOfBytesRead = try {
-                        inputStream?.read(mmBuffer)
-                    } catch (e: Exception) {
-                        Log.d(
-                            "BluetoothService",
-                            "Error while reading from input stream: ${e.message}"
-                        )
-                    }
-                    trySend(BluetoothMessage(byteBuffer, numberOfBytesRead ?: 0))
-                }
-            }
-        }
-    }
-
-    private fun sendMessage(bytes: ByteArray) {
-        try {
-            outputStream?.write(bytes)
-        } catch (e: Exception) {
-            Log.d("BluetoothService", "Error while writing to output stream: ${e.message}")
-        }
-    }
-
-    private fun disconnect() {
-        manageConnectionJob?.cancel()
-        outputStream?.apply {
-            flush()
-            close()
-            outputStream = null
-        }
-    }
 }
 
 data class BluetoothMessage(
@@ -202,6 +74,7 @@ data class BluetoothMessage(
 )
 
 sealed interface ServerBluetoothEvent {
+    data object WaitingForClient : ServerBluetoothEvent
     data object ClientConnected : ServerBluetoothEvent
     data object ClientDisconnected : ServerBluetoothEvent
     data class MessageReceived(val bytes: ByteArray, val numberOfBytesRead: Int) :
@@ -211,6 +84,7 @@ sealed interface ServerBluetoothEvent {
 }
 
 sealed interface ClientBluetoothEvent {
+    data object Initialized: ClientBluetoothEvent
     data object ConnectedToServer : ClientBluetoothEvent
     data object DisconnectedFromServer : ClientBluetoothEvent
     data class MessageReceived(val bytes: ByteArray, val numberOfBytesRead: Int) :
