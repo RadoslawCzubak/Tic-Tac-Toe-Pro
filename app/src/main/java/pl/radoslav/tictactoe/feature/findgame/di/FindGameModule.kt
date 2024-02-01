@@ -1,5 +1,6 @@
 package pl.radoslav.tictactoe.feature.findgame.di
 
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import dagger.Binds
@@ -20,7 +21,7 @@ abstract class FindGameModule {
             context.getSystemService(BluetoothManager::class.java)
 
         @Provides
-        fun provideBluetoothAdapter(bluetoothManager: BluetoothManager) =
+        fun provideBluetoothAdapter(bluetoothManager: BluetoothManager): BluetoothAdapter =
             bluetoothManager.adapter
     }
 

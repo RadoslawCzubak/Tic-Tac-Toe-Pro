@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import pl.radoslav.tictactoe.feature.findgame.presentation.guest.FindGameScreen
+import pl.radoslav.tictactoe.feature.game.presentation.GameScreen
 import pl.radoslav.tictactoe.feature.mainmenu.MainMenuScreen
 import pl.radoslav.tictactoe.ui.theme.TicTacToeTheme
 
@@ -18,12 +19,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             TicTacToeTheme {
                 val navController = rememberNavController()
-                NavHost(navController, startDestination = "mainmenu") {
+                NavHost(navController, startDestination = "game") {
                     composable("mainmenu") {
                         MainMenuScreen(navController)
                     }
                     composable("findgame") {
                         FindGameScreen()
+                    }
+                    composable("game") {
+                        GameScreen()
                     }
                 }
             }
