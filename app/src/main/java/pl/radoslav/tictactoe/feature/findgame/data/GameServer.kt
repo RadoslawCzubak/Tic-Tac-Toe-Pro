@@ -5,33 +5,77 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
-import android.os.Bundle
 import android.os.Handler
+import android.os.Message
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import timber.log.Timber
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
 import javax.inject.Inject
+import javax.inject.Singleton
 
 @SuppressLint("MissingPermission")
+@Singleton
 class GameServer @Inject constructor(
-    private val handler: Handler,
     private val bluetoothAdapter: BluetoothAdapter
 ) {
-
-    private val gameState = MutableStateFlow<Game>()
-
-    private var serverThread: Thread? = null
-    private var clientThread: Thread? = null
-    private var connectionThread: Thread? = null
-
-    fun createGameServer(){
-        server
+    sealed interface Events {
+        data object Empty : Events
+        data object Connected : Events
+        data class Message(val row: Int, val column: Int) : Events
     }
 
-    private inner class ServerThread() : Thread() {
+    private val _gameState = MutableStateFlow<Events>(Events.Empty)
+    val gameState = _gameState.asStateFlow()
+
+    private var serverThread: ServerThread? = null
+    private var clientThread: ConnectThread? = null
+    private var connectionThread: ConnectedThread? = null
+
+    @SuppressLint("HandlerLeak")
+    private val handler = object : Handler() {
+        override fun handleMessage(msg: Message) {
+            when (msg.what) {
+                MESSAGE_READ -> {
+                    val readBuf = msg.obj as ByteArray
+                    val readMessage: String = String(readBuf, 0, msg.arg1)
+                    val (row, column) = readMessage.split(" ")
+                    _gameState.tryEmit(Events.Message(row.toInt(), column.toInt()))
+                }
+
+                MESSAGE_WRITE -> {
+
+                }
+
+                else -> Unit
+            }
+        }
+    }
+
+    fun createGameServer() {
+        serverThread?.cancel()
+        serverThread = null
+        clientThread?.cancel()
+        clientThread = null
+
+        serverThread = ServerThread()
+        serverThread?.start()
+    }
+
+    fun connectToGameServer(bluetoothDevice: BluetoothDevice) {
+        serverThread?.cancel()
+        serverThread = null
+        clientThread?.cancel()
+        clientThread = null
+
+        clientThread = ConnectThread(bluetoothDevice)
+        clientThread?.start()
+    }
+
+    private inner class ServerThread : Thread() {
         private val serverSocket: BluetoothServerSocket? by lazy(LazyThreadSafetyMode.NONE) {
             bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(
                 "TicTacToeServer",
@@ -43,13 +87,16 @@ class GameServer @Inject constructor(
             var shouldLoop = true
             while (shouldLoop) {
                 val socket: BluetoothSocket? = try {
+                    Timber.d("RRR Socket's accept() loop")
                     serverSocket?.accept()
                 } catch (exception: IOException) {
-                    Timber.e("Socket's accept() method failed", exception)
+                    Timber.e("RRR Socket's accept() method failed", exception)
                     shouldLoop = false
                     null
                 }
+                Timber.d("RRR "+ socket.toString())
                 socket?.also {
+                    Timber.d("RRR Socket's accept() connected")
                     manageMyConnectedSocket(it)
                     serverSocket?.close()
                     shouldLoop = false
@@ -72,7 +119,7 @@ class GameServer @Inject constructor(
             device.createRfcommSocketToServiceRecord(TIC_TAC_TOE_SERVER_UUID)
         }
 
-        public override fun run() {
+        override fun run() {
             // Cancel discovery because it otherwise slows down the connection.
             bluetoothAdapter.cancelDiscovery()
 
@@ -105,18 +152,15 @@ class GameServer @Inject constructor(
             while (true) {
                 // Read from the InputStream.
                 numBytes = try {
+                    Timber.d("Reading...")
                     mmInStream.read(mmBuffer)
                 } catch (e: IOException) {
                     Timber.d("Input stream was disconnected", e)
                     break
                 }
-
-                // Send the obtained bytes to the UI activity.
-                val readMsg = handler.obtainMessage(
-                    MESSAGE_READ, numBytes, -1,
-                    mmBuffer
-                )
-                readMsg.sendToTarget()
+                handler.obtainMessage(
+                    MESSAGE_READ, numBytes, -1, mmBuffer
+                ).sendToTarget()
             }
         }
 
@@ -124,24 +168,10 @@ class GameServer @Inject constructor(
         fun write(bytes: ByteArray) {
             try {
                 mmOutStream.write(bytes)
+                Timber.d("Writing...")
             } catch (e: IOException) {
                 Timber.e("Error occurred when sending data", e)
-
-                // Send a failure message back to the activity.
-                val writeErrorMsg = handler.obtainMessage(MESSAGE_TOAST)
-                val bundle = Bundle().apply {
-                    putString("toast", "Couldn't send data to the other device")
-                }
-                writeErrorMsg.data = bundle
-                handler.sendMessage(writeErrorMsg)
-                return
             }
-
-            // Share the sent message with the UI activity.
-            val writtenMsg = handler.obtainMessage(
-                MESSAGE_WRITE, -1, -1, mmBuffer
-            )
-            writtenMsg.sendToTarget()
         }
 
         // Call this method from the main activity to shut down the connection.
@@ -154,16 +184,37 @@ class GameServer @Inject constructor(
         }
     }
 
-    fun manageMyConnectedSocket(bluetoothSocket: BluetoothSocket) {
+    fun write(out: ByteArray?) {
+        // Create temporary object
+        var r: ConnectedThread?
+        Timber.d("Try to write")
+        // Synchronize a copy of the ConnectedThread
+        synchronized(this) {
+            if (connectionThread != null)
+                r = connectionThread!!
+            else
+                return
+        }
+        // Perform the write unsynchronized
+        r?.write(out!!)
+    }
 
+    fun manageMyConnectedSocket(bluetoothSocket: BluetoothSocket) {
+//        serverThread?.cancel()
+//        serverThread = null
+//        clientThread?.cancel()
+//        clientThread = null
+
+        _gameState.tryEmit(Events.Connected)
+        connectionThread = ConnectedThread(bluetoothSocket)
+        connectionThread?.start()
     }
 
     companion object {
         val TIC_TAC_TOE_SERVER_UUID: UUID =
             UUID.fromString("483f9bd2-57f5-48f6-ab45-1748edfa2a77")
 
-        const val MESSAGE_READ: Int = 0
-        const val MESSAGE_WRITE: Int = 1
-        const val MESSAGE_TOAST: Int = 2
+        const val MESSAGE_READ = 1
+        const val MESSAGE_WRITE = 2
     }
 }

@@ -1,6 +1,7 @@
 package pl.radoslav.tictactoe.feature.findgame.presentation.guest
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,12 +20,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import pl.radoslav.tictactoe.feature.findgame.domain.model.BtDevice
 
 @Composable
-fun FindGameScreen() {
+fun FindGameScreen(
+    navController: NavController
+) {
     val viewModel: FindGameGuestViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(key1 = state) {
+        if (state.navigateToGame) {
+            navController.navigate("game")
+        }
+    }
+
     FindGameContent(
         state = state,
         onSearchDevicesClick = {
@@ -31,6 +44,9 @@ fun FindGameScreen() {
                 viewModel.stopDiscoveringDevices()
             else
                 viewModel.discoverDevices()
+        },
+        onClick = {
+            viewModel.connectToDevice(it)
         }
     )
 }
@@ -38,7 +54,8 @@ fun FindGameScreen() {
 @Composable
 fun FindGameContent(
     state: FindGameGuestState,
-    onSearchDevicesClick: () -> Unit
+    onSearchDevicesClick: () -> Unit,
+    onClick: (BtDevice) -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -57,7 +74,8 @@ fun FindGameContent(
                 BluetoothDeviceItem(
                     device,
                     isConnecting = false,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onClick
                 )
             }
         }
@@ -71,10 +89,14 @@ fun FindGameContent(
 fun BluetoothDeviceItem(
     device: BtDevice,
     isConnecting: Boolean,
+    onClick: (BtDevice) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier) {
-        Column(Modifier.background(Color.Blue)) {
+    Row(modifier
+        .clickable {
+            onClick(device)
+        }) {
+        Column(Modifier.background(Color.White)) {
             Text(device.name, color = Color.Black)
             Text(device.address)
         }
@@ -94,7 +116,8 @@ fun FindGameScreenPreview() {
             ),
             isSearching = true
         ),
-        onSearchDevicesClick = {}
+        onSearchDevicesClick = {},
+        onClick = {}
     )
 }
 
@@ -103,7 +126,8 @@ fun FindGameScreenPreview() {
 fun BluetoothDeviceItemPreview() {
     BluetoothDeviceItem(
         BtDevice("Test device", "AA:AA:AA:AA:AA:AA", 0),
-        isConnecting = true
+        isConnecting = true,
+        onClick = {}
     )
 
 }

@@ -13,18 +13,26 @@ import androidx.navigation.compose.rememberNavController
 fun MainMenuScreen(navController: NavController) {
     val viewModel: MainMenuViewModel = hiltViewModel()
     MainMenuContent(
-        onConnectWithPlayer = {navController.navigate("findgame")}
+        onConnectWithPlayer = { navController.navigate("findgame") },
+        onHostServer = { navController.navigate("host") },
     )
 }
 
 @Composable
-fun MainMenuContent(onConnectWithPlayer: () -> Unit) {
+fun MainMenuContent(
+    onConnectWithPlayer: () -> Unit,
+    onHostServer: () -> Unit
+) {
     Column {
         Text(text = "Tic Tac Toe")
         Text(text = "Pro Edition")
 
         Button(onClick = onConnectWithPlayer) {
             Text(text = "Connect with player")
+        }
+
+        Button(onClick = onHostServer) {
+            Text(text = "Host game")
         }
     }
 }
@@ -33,6 +41,7 @@ fun MainMenuContent(onConnectWithPlayer: () -> Unit) {
 @Composable
 fun MainMenuContentPreview() {
     MainMenuContent(
-        onConnectWithPlayer = {}
+        onConnectWithPlayer = {},
+        onHostServer = {}
     )
 }

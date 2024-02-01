@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.timeout
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
@@ -51,6 +52,7 @@ class BluetoothService @Inject constructor(
                         BluetoothDevice.ACTION_FOUND -> {
                             intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                                 ?.let {
+                                    Timber.d(it.toString())
                                     trySend(it)
                                 }
                         }

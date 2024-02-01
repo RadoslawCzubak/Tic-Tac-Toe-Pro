@@ -7,6 +7,6 @@ import pl.radoslav.tictactoe.feature.findgame.domain.model.BtDevice
 
 interface BluetoothRepository {
     fun discoverDevices(): Flow<List<BtDevice>>
-    suspend fun connectToServer(btDevice: BtDevice): Flow<ClientBluetoothEvent>
+    suspend fun connectToServer(btDevice: BtDevice)
     suspend fun createServer(): Flow<ServerBluetoothEvent>
 }
