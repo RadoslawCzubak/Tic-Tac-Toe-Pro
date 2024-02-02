@@ -12,3 +12,6 @@ on:
 jobs:
   KtLint:
     uses: ./.github/workflows/ktlint.yml
+
+  UnitTests:
+    uses: ./.github/workflows/unitTestsDebug.yml
