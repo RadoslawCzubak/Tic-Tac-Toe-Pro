@@ -12,7 +12,7 @@ fun MainMenuScreen() {
     val viewModel: MainMenuViewModel = hiltViewModel()
 
     MainMenuContent(
-        onConnectWithPlayer = {}
+        onConnectWithPlayer = {},
     )
 }
 
@@ -32,6 +32,6 @@ fun MainMenuContent(onConnectWithPlayer: () -> Unit) {
 @Composable
 fun MainMenuContentPreview() {
     MainMenuContent(
-        onConnectWithPlayer = {}
+        onConnectWithPlayer = {},
     )
 }
