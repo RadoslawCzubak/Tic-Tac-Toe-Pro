@@ -14,7 +14,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun FindGameHostScreen(navController: NavController, onMakeDiscoverable: () -> Unit) {
+fun FindGameHostScreen(
+    navController: NavController,
+    onMakeDiscoverable: () -> Unit,
+) {
     val viewModel: FindGameHostViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 

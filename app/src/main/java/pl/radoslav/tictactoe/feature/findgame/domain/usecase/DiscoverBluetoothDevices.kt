@@ -8,22 +8,27 @@ import kotlinx.coroutines.flow.map
 import pl.radoslav.tictactoe.feature.findgame.domain.model.BtDevice
 import javax.inject.Inject
 
-class DiscoverBluetoothDevices @Inject constructor(
-    private val repository: BluetoothRepository
-) {
-    suspend operator fun invoke(): Flow<Resource> = repository.discoverDevices()
-        .map { Resource.Success(it) as Resource }
-        .catch {
-            if (it is TimeoutCancellationException) {
-                emit(Resource.Closed)
-            }
-            emit(Resource.Failure("Error while searching for devices: ${it.message}"))
-            Log.d("DiscoverBluetoothDevices", "Error while searching for devices: ${it.message}")
-        }
+class DiscoverBluetoothDevices
+    @Inject
+    constructor(
+        private val repository: BluetoothRepository,
+    ) {
+        suspend operator fun invoke(): Flow<Resource> =
+            repository.discoverDevices()
+                .map { Resource.Success(it) as Resource }
+                .catch {
+                    if (it is TimeoutCancellationException) {
+                        emit(Resource.Closed)
+                    }
+                    emit(Resource.Failure("Error while searching for devices: ${it.message}"))
+                    Log.d("DiscoverBluetoothDevices", "Error while searching for devices: ${it.message}")
+                }
 
-    sealed interface Resource {
-        data class Success(val devices: List<BtDevice>) : Resource
-        data class Failure(val message: String) : Resource
-        data object Closed : Resource
+        sealed interface Resource {
+            data class Success(val devices: List<BtDevice>) : Resource
+
+            data class Failure(val message: String) : Resource
+
+            data object Closed : Resource
+        }
     }
-}

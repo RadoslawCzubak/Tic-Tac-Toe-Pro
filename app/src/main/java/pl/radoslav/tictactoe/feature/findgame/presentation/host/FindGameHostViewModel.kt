@@ -12,24 +12,26 @@ import pl.radoslav.tictactoe.feature.findgame.data.GameServer
 import javax.inject.Inject
 
 @HiltViewModel
-class FindGameHostViewModel @Inject constructor(
-    private val gameServer: GameServer
-) : ViewModel() {
+class FindGameHostViewModel
+    @Inject
+    constructor(
+        private val gameServer: GameServer,
+    ) : ViewModel() {
+        private val _state by lazy { MutableStateFlow(FindGameHostState()) }
+        val state = _state.asStateFlow()
 
-    private val _state by lazy { MutableStateFlow(FindGameHostState()) }
-    val state = _state.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            gameServer.createGameServer()
-        }
-        viewModelScope.launch {
-            gameServer.gameState.collect {
-                if (it == GameServer.Events.Connected)
-                    _state.update {
-                        it.copy(navigateToGame = true)
+        init {
+            viewModelScope.launch {
+                gameServer.createGameServer()
+            }
+            viewModelScope.launch {
+                gameServer.gameState.collect {
+                    if (it == GameServer.Events.Connected) {
+                        _state.update {
+                            it.copy(navigateToGame = true)
+                        }
                     }
+                }
             }
         }
     }
-}

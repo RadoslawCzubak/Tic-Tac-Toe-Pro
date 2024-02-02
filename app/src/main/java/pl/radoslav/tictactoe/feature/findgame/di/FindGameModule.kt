@@ -17,16 +17,14 @@ import pl.radoslav.tictactoe.feature.findgame.domain.usecase.BluetoothRepository
 abstract class FindGameModule {
     companion object {
         @Provides
-        fun provideBluetoothManager(@ApplicationContext context: Context): BluetoothManager =
-            context.getSystemService(BluetoothManager::class.java)
+        fun provideBluetoothManager(
+            @ApplicationContext context: Context,
+        ): BluetoothManager = context.getSystemService(BluetoothManager::class.java)
 
         @Provides
-        fun provideBluetoothAdapter(bluetoothManager: BluetoothManager): BluetoothAdapter =
-            bluetoothManager.adapter
+        fun provideBluetoothAdapter(bluetoothManager: BluetoothManager): BluetoothAdapter = bluetoothManager.adapter
     }
 
     @Binds
-    abstract fun bindBluetoothRepository(
-        bluetoothRepositoryImpl: BluetoothRepositoryImpl
-    ): BluetoothRepository
+    abstract fun bindBluetoothRepository(bluetoothRepositoryImpl: BluetoothRepositoryImpl): BluetoothRepository
 }

@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun MainMenuScreen(navController: NavController) {
@@ -21,7 +20,7 @@ fun MainMenuScreen(navController: NavController) {
 @Composable
 fun MainMenuContent(
     onConnectWithPlayer: () -> Unit,
-    onHostServer: () -> Unit
+    onHostServer: () -> Unit,
 ) {
     Column {
         Text(text = "Tic Tac Toe")
@@ -42,6 +41,6 @@ fun MainMenuContent(
 fun MainMenuContentPreview() {
     MainMenuContent(
         onConnectWithPlayer = {},
-        onHostServer = {}
+        onHostServer = {},
     )
 }

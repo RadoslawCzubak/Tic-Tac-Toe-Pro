@@ -33,13 +33,14 @@ class MainActivity : ComponentActivity() {
                         FindGameHostScreen(
                             navController = navController,
                             onMakeDiscoverable = {
-                                val requestCode = 1;
+                                val requestCode = 1
                                 val discoverableIntent: Intent =
                                     Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE).apply {
                                         putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300)
                                     }
                                 startActivityForResult(discoverableIntent, requestCode)
-                            })
+                            },
+                        )
                     }
                     composable("game") {
                         GameScreen()

@@ -5,5 +5,5 @@ import pl.radoslav.tictactoe.feature.game.domain.Player
 
 data class GameScreenState(
     val currentPlayer: Player = Player.O,
-    val board: Board = Board()
+    val board: Board = Board(),
 )

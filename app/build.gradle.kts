@@ -1,8 +1,11 @@
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("org.jlleitschuh.gradle.ktlint")
 }
 
 android {
@@ -27,7 +30,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -48,6 +51,14 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+}
+
+ktlint {
+    android.set(true)
+    reporters {
+        reporter(ReporterType.PLAIN)
+        reporter(ReporterType.CHECKSTYLE)
     }
 }
 
@@ -73,8 +84,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
 
     // Compose Navigation
-    val nav_version = "2.7.6"
-    implementation("androidx.navigation:navigation-compose:$nav_version")
+    val navVersion = "2.7.6"
+    implementation("androidx.navigation:navigation-compose:$navVersion")
 
     // Dagger Hilt
     implementation("com.google.dagger:hilt-android:2.50")
@@ -82,5 +93,4 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
     implementation("com.jakewharton.timber:timber:5.0.1")
-
 }

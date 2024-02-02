@@ -23,7 +23,6 @@ import pl.radoslav.tictactoe.feature.game.domain.Player
 
 @Composable
 fun GameScreen() {
-
     val viewModel: GameViewModel = hiltViewModel()
     val state: GameScreenState by viewModel.state.collectAsStateWithLifecycle()
 
@@ -31,44 +30,42 @@ fun GameScreen() {
         state = state,
         onBoardCellClicked = { rowId, columnId ->
             viewModel.onBoardCellClicked(rowId, columnId)
-        }
+        },
     )
 }
 
 @Composable
 fun GameScreenContent(
     state: GameScreenState,
-    onBoardCellClicked: (Int, Int) -> Unit
+    onBoardCellClicked: (Int, Int) -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
-
         CurrentPlayerIndicator(state.currentPlayer)
         TicTacToeBoard(
             state = state,
-            onBoardCellClicked
+            onBoardCellClicked,
         )
     }
 }
 
 @Composable
-fun CurrentPlayerIndicator(
-    player: Player
-) {
+fun CurrentPlayerIndicator(player: Player) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text("Current player: ")
         Box(
-            modifier = Modifier
-                .size(32.dp)
-                .background(
-                    when (player) {
-                        Player.O -> Color.Blue
-                        Player.X -> Color.Red
-                    }
-                )
+            modifier =
+                Modifier
+                    .size(32.dp)
+                    .background(
+                        when (player) {
+                            Player.O -> Color.Blue
+                            Player.X -> Color.Red
+                        },
+                    ),
         )
     }
 }
@@ -76,24 +73,28 @@ fun CurrentPlayerIndicator(
 @Composable
 fun TicTacToeBoard(
     state: GameScreenState,
-    onBoardCellClicked: (Int, Int) -> Unit
+    onBoardCellClicked: (Int, Int) -> Unit,
 ) {
     Column {
         state.board.cells.forEachIndexed { rowId, row ->
             Row {
                 row.forEachIndexed { columnId, cell ->
-                    val backgroundColor = when (cell) {
-                        Player.O -> Color.Blue
-                        Player.X -> Color.Red
-                        null -> Color.Gray
-                    }
-                    Box(modifier = Modifier
-                        .size(100.dp)
-                        .padding(8.dp)
-                        .background(backgroundColor)
-                        .clickable {
-                            onBoardCellClicked(rowId, columnId)
-                        })
+                    val backgroundColor =
+                        when (cell) {
+                            Player.O -> Color.Blue
+                            Player.X -> Color.Red
+                            null -> Color.Gray
+                        }
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(100.dp)
+                                .padding(8.dp)
+                                .background(backgroundColor)
+                                .clickable {
+                                    onBoardCellClicked(rowId, columnId)
+                                },
+                    )
                 }
             }
         }
@@ -105,6 +106,6 @@ fun TicTacToeBoard(
 fun GamePreview() {
     GameScreenContent(
         state = GameScreenState(),
-        onBoardCellClicked = { _, _ -> }
+        onBoardCellClicked = { _, _ -> },
     )
 }

@@ -21,13 +21,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import pl.radoslav.tictactoe.feature.findgame.domain.model.BtDevice
 
 @Composable
-fun FindGameScreen(
-    navController: NavController
-) {
+fun FindGameScreen(navController: NavController) {
     val viewModel: FindGameGuestViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -40,14 +37,15 @@ fun FindGameScreen(
     FindGameContent(
         state = state,
         onSearchDevicesClick = {
-            if (state.isSearching)
+            if (state.isSearching) {
                 viewModel.stopDiscoveringDevices()
-            else
+            } else {
                 viewModel.discoverDevices()
+            }
         },
         onClick = {
             viewModel.connectToDevice(it)
-        }
+        },
     )
 }
 
@@ -59,23 +57,25 @@ fun FindGameContent(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
+        modifier =
+            Modifier
+                .fillMaxSize(),
     ) {
         Text("Find your opponent")
         Text(if (state.isSearching) "Searching..." else "Not searching")
         LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .background(Color.Gray)
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .background(Color.Gray),
         ) {
             items(state.devicesFound) { device ->
                 BluetoothDeviceItem(
                     device,
                     isConnecting = false,
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = onClick
+                    onClick = onClick,
                 )
             }
         }
@@ -90,12 +90,14 @@ fun BluetoothDeviceItem(
     device: BtDevice,
     isConnecting: Boolean,
     onClick: (BtDevice) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    Row(modifier
-        .clickable {
-            onClick(device)
-        }) {
+    Row(
+        modifier
+            .clickable {
+                onClick(device)
+            },
+    ) {
         Column(Modifier.background(Color.White)) {
             Text(device.name, color = Color.Black)
             Text(device.address)
@@ -108,16 +110,18 @@ fun BluetoothDeviceItem(
 @Composable
 fun FindGameScreenPreview() {
     FindGameContent(
-        state = FindGameGuestState(
-            devicesFound = listOf(
-                BtDevice("Test device", "AA:AA:AA:AA:AA:AA", 0),
-                BtDevice("Test device 2", "BB:BB:BB:BB:BB:BB", 0),
-                BtDevice("Test device 3", "CC:CC:CC:CC:CC:CC", 0),
+        state =
+            FindGameGuestState(
+                devicesFound =
+                    listOf(
+                        BtDevice("Test device", "AA:AA:AA:AA:AA:AA", 0),
+                        BtDevice("Test device 2", "BB:BB:BB:BB:BB:BB", 0),
+                        BtDevice("Test device 3", "CC:CC:CC:CC:CC:CC", 0),
+                    ),
+                isSearching = true,
             ),
-            isSearching = true
-        ),
         onSearchDevicesClick = {},
-        onClick = {}
+        onClick = {},
     )
 }
 
@@ -127,7 +131,6 @@ fun BluetoothDeviceItemPreview() {
     BluetoothDeviceItem(
         BtDevice("Test device", "AA:AA:AA:AA:AA:AA", 0),
         isConnecting = true,
-        onClick = {}
+        onClick = {},
     )
-
 }
