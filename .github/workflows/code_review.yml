@@ -11,4 +11,4 @@ on:
       - main
 jobs:
   KtLint:
-    uses: ./.github/workflows/reusable_unit_tests.yml
+    uses: ./.github/workflows/ktlint.yml
