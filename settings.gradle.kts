@@ -15,3 +15,11 @@ dependencyResolutionManagement {
 
 rootProject.name = "TicTacToe"
 include(":app")
+include(":home:implementation")
+include(":game:implementation")
+include(":home:api")
+include(":game:api")
+include(":build-logic")
+include(":bluetooth")
+include(":core")
+include(":core-ui")
