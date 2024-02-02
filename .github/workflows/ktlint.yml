@@ -1,0 +1,18 @@
+name: KtLint
+
+on:
+  workflow_call:
+
+jobs:
+  KtLint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: "liberica"
+          java-version: "17"
+      - name: Gradle cache
+        uses: burrunan/gradle-cache-action@v1
+      - run: ./gradlew ktlintCheck
