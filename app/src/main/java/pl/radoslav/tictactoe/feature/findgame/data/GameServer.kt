@@ -41,7 +41,7 @@ class GameServer @Inject constructor(
             when (msg.what) {
                 MESSAGE_READ -> {
                     val readBuf = msg.obj as ByteArray
-                    val readMessage: String = String(readBuf, 0, msg.arg1)
+                    val readMessage = String(readBuf, 0, msg.arg1)
                     val (row, column) = readMessage.split(" ")
                     _gameState.tryEmit(Events.Message(row.toInt(), column.toInt()))
                 }
@@ -120,7 +120,6 @@ class GameServer @Inject constructor(
         }
 
         override fun run() {
-            // Cancel discovery because it otherwise slows down the connection.
             bluetoothAdapter.cancelDiscovery()
 
             socket?.let { socket ->
@@ -128,8 +127,6 @@ class GameServer @Inject constructor(
                 manageMyConnectedSocket(socket)
             }
         }
-
-        // Closes the client socket and causes the thread to finish.
         fun cancel() {
             try {
                 socket?.close()
@@ -146,11 +143,8 @@ class GameServer @Inject constructor(
         private val mmBuffer: ByteArray = ByteArray(1024) // mmBuffer store for the stream
 
         override fun run() {
-            var numBytes: Int // bytes returned from read()
-
-            // Keep listening to the InputStream until an exception occurs.
+            var numBytes: Int
             while (true) {
-                // Read from the InputStream.
                 numBytes = try {
                     Timber.d("Reading...")
                     mmInStream.read(mmBuffer)
@@ -163,8 +157,6 @@ class GameServer @Inject constructor(
                 ).sendToTarget()
             }
         }
-
-        // Call this from the main activity to send data to the remote device.
         fun write(bytes: ByteArray) {
             try {
                 mmOutStream.write(bytes)
@@ -173,8 +165,6 @@ class GameServer @Inject constructor(
                 Timber.e("Error occurred when sending data", e)
             }
         }
-
-        // Call this method from the main activity to shut down the connection.
         fun cancel() {
             try {
                 mmSocket.close()
@@ -185,26 +175,18 @@ class GameServer @Inject constructor(
     }
 
     fun write(out: ByteArray?) {
-        // Create temporary object
         var r: ConnectedThread?
         Timber.d("Try to write")
-        // Synchronize a copy of the ConnectedThread
         synchronized(this) {
             if (connectionThread != null)
                 r = connectionThread!!
             else
                 return
         }
-        // Perform the write unsynchronized
         r?.write(out!!)
     }
 
     fun manageMyConnectedSocket(bluetoothSocket: BluetoothSocket) {
-//        serverThread?.cancel()
-//        serverThread = null
-//        clientThread?.cancel()
-//        clientThread = null
-
         _gameState.tryEmit(Events.Connected)
         connectionThread = ConnectedThread(bluetoothSocket)
         connectionThread?.start()

@@ -36,11 +36,8 @@ import kotlin.time.Duration.Companion.seconds
 @SuppressLint("MissingPermission")
 class BluetoothService @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val bluetoothManager: BluetoothManager,
     private val bluetoothAdapter: BluetoothAdapter,
 ) {
-    private val bluetoothScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-
     @OptIn(FlowPreview::class)
     @SuppressLint("MissingPermission")
     fun discoverDevices(): Flow<BluetoothDevice> {
@@ -68,29 +65,4 @@ class BluetoothService @Inject constructor(
         }.timeout(timeout = 15.seconds)
             .cancellable()
     }
-}
-
-data class BluetoothMessage(
-    val message: ByteArray,
-    val bytesRead: Int,
-)
-
-sealed interface ServerBluetoothEvent {
-    data object WaitingForClient : ServerBluetoothEvent
-    data object ClientConnected : ServerBluetoothEvent
-    data object ClientDisconnected : ServerBluetoothEvent
-    data class MessageReceived(val bytes: ByteArray, val numberOfBytesRead: Int) :
-        ServerBluetoothEvent
-
-    data class Error(val throwable: Throwable) : ServerBluetoothEvent
-}
-
-sealed interface ClientBluetoothEvent {
-    data object Initialized: ClientBluetoothEvent
-    data object ConnectedToServer : ClientBluetoothEvent
-    data object DisconnectedFromServer : ClientBluetoothEvent
-    data class MessageReceived(val bytes: ByteArray, val numberOfBytesRead: Int) :
-        ClientBluetoothEvent
-
-    data class Error(val throwable: Throwable) : ClientBluetoothEvent
 }

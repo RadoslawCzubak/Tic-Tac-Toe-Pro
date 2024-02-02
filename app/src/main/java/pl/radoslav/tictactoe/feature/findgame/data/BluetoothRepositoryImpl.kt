@@ -48,9 +48,4 @@ class BluetoothRepositoryImpl @Inject constructor(
             bluetoothDevice
         )
     }
-
-    override suspend fun createServer(): Flow<ServerBluetoothEvent> {
-//        return bluetoothService.createNewServer()
-        return flow {}
-    }
 }
