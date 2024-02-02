@@ -1,0 +1,17 @@
+name: Code review
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, ready_for_review, synchronize]
+    branches:
+      - main
+jobs:
+  KtLint:
+    uses: ./.github/workflows/ktlint.yml
+
+  UnitTests:
+    uses: ./.github/workflows/unitTestsDebug.yml
