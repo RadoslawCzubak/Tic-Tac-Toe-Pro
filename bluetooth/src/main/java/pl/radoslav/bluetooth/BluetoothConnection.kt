@@ -37,7 +37,6 @@ class BluetoothConnection(
                 )
             }
         }.flowOn(Dispatchers.IO)
-
     }
 
     fun write(bytes: ByteArray) {

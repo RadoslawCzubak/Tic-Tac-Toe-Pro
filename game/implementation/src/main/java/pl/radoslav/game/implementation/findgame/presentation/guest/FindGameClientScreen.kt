@@ -58,17 +58,17 @@ fun FindGameContent(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier =
-        Modifier
-            .fillMaxSize(),
+            Modifier
+                .fillMaxSize(),
     ) {
         Text("Find your opponent")
         Text(if (state.isSearching) "Searching..." else "Not searching")
         LazyColumn(
             modifier =
-            Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .background(Color.Gray),
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .background(Color.Gray),
         ) {
             items(state.devicesFound) { device ->
                 BluetoothDeviceItem(
@@ -111,15 +111,15 @@ fun BluetoothDeviceItem(
 fun FindGameScreenPreview() {
     FindGameContent(
         state =
-        FindGameClientState(
-            devicesFound =
-            listOf(
-                GameServer("Test device", "AA:AA:AA:AA:AA:AA"),
-                GameServer("Test device 2", "BB:BB:BB:BB:BB:BB"),
-                GameServer("Test device 3", "CC:CC:CC:CC:CC:CC"),
+            FindGameClientState(
+                devicesFound =
+                    listOf(
+                        GameServer("Test device", "AA:AA:AA:AA:AA:AA"),
+                        GameServer("Test device 2", "BB:BB:BB:BB:BB:BB"),
+                        GameServer("Test device 3", "CC:CC:CC:CC:CC:CC"),
+                    ),
+                isSearching = true,
             ),
-            isSearching = true,
-        ),
         onSearchDevicesClick = {},
         onClick = {},
     )

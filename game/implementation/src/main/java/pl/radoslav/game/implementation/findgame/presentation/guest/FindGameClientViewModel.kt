@@ -8,63 +8,55 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import pl.radoslav.bluetooth.BtDevice
 import pl.radoslav.game.implementation.domain.GameRepository
 import pl.radoslav.game.implementation.domain.GameServer
 import pl.radoslav.game.implementation.domain.usecase.DiscoverBluetoothDevices
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class FindGameClientViewModel
-@Inject
-constructor(
-    private val discoverBluetoothDevices: DiscoverBluetoothDevices,
-    private val gameRepository: GameRepository,
-) : ViewModel() {
-    private val _state by lazy { MutableStateFlow(FindGameClientState()) }
-    val state = _state.asStateFlow()
+    @Inject
+    constructor(
+        private val discoverBluetoothDevices: DiscoverBluetoothDevices,
+        private val gameRepository: GameRepository,
+    ) : ViewModel() {
+        private val _state by lazy { MutableStateFlow(FindGameClientState()) }
+        val state = _state.asStateFlow()
 
-    private var discoverJob: Job? = null
+        private var discoverJob: Job? = null
 
-    init {
-        viewModelScope.launch {
-
-        }
-    }
-
-    fun connectToDevice(server: GameServer) {
-        viewModelScope.launch {
-        }
-    }
-
-    fun discoverDevices() {
-        if (discoverJob != null) return
-        discoverJob =
+        fun connectToDevice(server: GameServer) {
             viewModelScope.launch {
-                _state.update { it.copy(isSearching = true) }
-                discoverBluetoothDevices()
-                    .collect { resource ->
-                        when (resource) {
-                            is DiscoverBluetoothDevices.Resource.Success -> {
-                                _state.update { it.copy(devicesFound = resource.devices) }
-                            }
+            }
+        }
 
-                            is DiscoverBluetoothDevices.Resource.Failure -> {
-                                stopDiscoveringDevices()
-                            }
+        fun discoverDevices() {
+            if (discoverJob != null) return
+            discoverJob =
+                viewModelScope.launch {
+                    _state.update { it.copy(isSearching = true) }
+                    discoverBluetoothDevices()
+                        .collect { resource ->
+                            when (resource) {
+                                is DiscoverBluetoothDevices.Resource.Success -> {
+                                    _state.update { it.copy(devicesFound = resource.devices) }
+                                }
 
-                            is DiscoverBluetoothDevices.Resource.Closed -> {
-                                stopDiscoveringDevices()
+                                is DiscoverBluetoothDevices.Resource.Failure -> {
+                                    stopDiscoveringDevices()
+                                }
+
+                                is DiscoverBluetoothDevices.Resource.Closed -> {
+                                    stopDiscoveringDevices()
+                                }
                             }
                         }
-                    }
-            }
-    }
+                }
+        }
 
-    fun stopDiscoveringDevices() {
-        discoverJob?.cancel()
-        discoverJob = null
-        _state.update { it.copy(isSearching = false) }
+        fun stopDiscoveringDevices() {
+            discoverJob?.cancel()
+            discoverJob = null
+            _state.update { it.copy(isSearching = false) }
+        }
     }
-}

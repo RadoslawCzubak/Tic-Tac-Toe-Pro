@@ -10,26 +10,26 @@ import pl.radoslav.game.implementation.domain.GameServer
 import javax.inject.Inject
 
 class DiscoverBluetoothDevices
-@Inject
-constructor(
-    private val repository: GameRepository,
-) {
-    suspend operator fun invoke(): Flow<Resource> =
-        repository.findServers()
-            .map { Resource.Success(it) as Resource }
-            .catch {
-                if (it is TimeoutCancellationException) {
-                    emit(Resource.Closed)
+    @Inject
+    constructor(
+        private val repository: GameRepository,
+    ) {
+        suspend operator fun invoke(): Flow<Resource> =
+            repository.findServers()
+                .map { Resource.Success(it) as Resource }
+                .catch {
+                    if (it is TimeoutCancellationException) {
+                        emit(Resource.Closed)
+                    }
+                    emit(Resource.Failure("Error while searching for devices: ${it.message}"))
+                    Log.d("DiscoverBluetoothDevices", "Error while searching for devices: ${it.message}")
                 }
-                emit(Resource.Failure("Error while searching for devices: ${it.message}"))
-                Log.d("DiscoverBluetoothDevices", "Error while searching for devices: ${it.message}")
-            }
 
-    sealed interface Resource {
-        data class Success(val devices: List<GameServer>) : Resource
+        sealed interface Resource {
+            data class Success(val devices: List<GameServer>) : Resource
 
-        data class Failure(val message: String) : Resource
+            data class Failure(val message: String) : Resource
 
-        data object Closed : Resource
+            data object Closed : Resource
+        }
     }
-}
