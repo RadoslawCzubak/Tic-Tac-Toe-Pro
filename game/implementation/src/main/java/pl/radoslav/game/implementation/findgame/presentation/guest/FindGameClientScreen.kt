@@ -21,11 +21,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import pl.radoslav.bluetooth.BtDevice
+import pl.radoslav.game.implementation.domain.GameServer
 
 @Composable
-fun FindGameScreen(navController: NavController) {
-    val viewModel: FindGameGuestViewModel = hiltViewModel()
+fun FindGameClientScreen(navController: NavController) {
+    val viewModel: FindGameClientViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = state) {
@@ -51,9 +51,9 @@ fun FindGameScreen(navController: NavController) {
 
 @Composable
 fun FindGameContent(
-    state: FindGameGuestState,
+    state: FindGameClientState,
     onSearchDevicesClick: () -> Unit,
-    onClick: (BtDevice) -> Unit,
+    onClick: (GameServer) -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -87,20 +87,20 @@ fun FindGameContent(
 
 @Composable
 fun BluetoothDeviceItem(
-    device: BtDevice,
+    server: GameServer,
     isConnecting: Boolean,
-    onClick: (BtDevice) -> Unit,
+    onClick: (GameServer) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
         modifier
             .clickable {
-                onClick(device)
+                onClick(server)
             },
     ) {
         Column(Modifier.background(Color.White)) {
-            Text(device.name, color = Color.Black)
-            Text(device.address)
+            Text(server.name, color = Color.Black)
+            Text(server.address)
         }
         if (isConnecting) CircularProgressIndicator()
     }
@@ -111,12 +111,12 @@ fun BluetoothDeviceItem(
 fun FindGameScreenPreview() {
     FindGameContent(
         state =
-            FindGameGuestState(
+            FindGameClientState(
                 devicesFound =
                     listOf(
-                        BtDevice("Test device", "AA:AA:AA:AA:AA:AA", 0),
-                        BtDevice("Test device 2", "BB:BB:BB:BB:BB:BB", 0),
-                        BtDevice("Test device 3", "CC:CC:CC:CC:CC:CC", 0),
+                        GameServer("Test device", "AA:AA:AA:AA:AA:AA"),
+                        GameServer("Test device 2", "BB:BB:BB:BB:BB:BB"),
+                        GameServer("Test device 3", "CC:CC:CC:CC:CC:CC"),
                     ),
                 isSearching = true,
             ),
@@ -129,7 +129,7 @@ fun FindGameScreenPreview() {
 @Composable
 fun BluetoothDeviceItemPreview() {
     BluetoothDeviceItem(
-        BtDevice("Test device", "AA:AA:AA:AA:AA:AA", 0),
+        GameServer("Test device", "AA:AA:AA:AA:AA:AA"),
         isConnecting = true,
         onClick = {},
     )

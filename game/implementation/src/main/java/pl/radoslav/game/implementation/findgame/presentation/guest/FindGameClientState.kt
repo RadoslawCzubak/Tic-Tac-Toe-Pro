@@ -1,9 +1,9 @@
 package pl.radoslav.game.implementation.findgame.presentation.guest
 
-import pl.radoslav.bluetooth.BtDevice
+import pl.radoslav.game.implementation.domain.GameServer
 
-data class FindGameGuestState(
-    val devicesFound: List<BtDevice> = emptyList(),
+data class FindGameClientState(
+    val devicesFound: List<GameServer> = emptyList(),
     val isSearching: Boolean = false,
     val navigateToGame: Boolean = false,
 )

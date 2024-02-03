@@ -1,21 +1,21 @@
-package pl.radoslav.game.implementation.findgame.domain.usecase
+package pl.radoslav.game.implementation.domain.usecase
 
 import android.util.Log
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import pl.radoslav.bluetooth.BluetoothRepository
-import pl.radoslav.bluetooth.BtDevice
+import pl.radoslav.game.implementation.domain.GameRepository
+import pl.radoslav.game.implementation.domain.GameServer
 import javax.inject.Inject
 
 class DiscoverBluetoothDevices
     @Inject
     constructor(
-        private val repository: BluetoothRepository,
+        private val repository: GameRepository,
     ) {
         suspend operator fun invoke(): Flow<Resource> =
-            repository.discoverDevices()
+            repository.findServers()
                 .map { Resource.Success(it) as Resource }
                 .catch {
                     if (it is TimeoutCancellationException) {
@@ -26,7 +26,7 @@ class DiscoverBluetoothDevices
                 }
 
         sealed interface Resource {
-            data class Success(val devices: List<BtDevice>) : Resource
+            data class Success(val devices: List<GameServer>) : Resource
 
             data class Failure(val message: String) : Resource
 

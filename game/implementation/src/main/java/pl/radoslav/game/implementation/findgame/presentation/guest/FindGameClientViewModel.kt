@@ -8,44 +8,25 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import pl.radoslav.bluetooth.BluetoothRepositoryImpl
-import pl.radoslav.bluetooth.BtDevice
-import pl.radoslav.bluetooth.GameServer
-import pl.radoslav.game.implementation.findgame.domain.usecase.DiscoverBluetoothDevices
-import timber.log.Timber
+import pl.radoslav.game.implementation.domain.GameRepository
+import pl.radoslav.game.implementation.domain.GameServer
+import pl.radoslav.game.implementation.domain.usecase.DiscoverBluetoothDevices
 import javax.inject.Inject
 
 @HiltViewModel
-class FindGameGuestViewModel
+class FindGameClientViewModel
     @Inject
     constructor(
         private val discoverBluetoothDevices: DiscoverBluetoothDevices,
-        private val gameServer: GameServer,
-        private val repositoryImpl: BluetoothRepositoryImpl,
+        private val gameRepository: GameRepository,
     ) : ViewModel() {
-        private val _state by lazy { MutableStateFlow(FindGameGuestState()) }
+        private val _state by lazy { MutableStateFlow(FindGameClientState()) }
         val state = _state.asStateFlow()
 
         private var discoverJob: Job? = null
 
-        init {
+        fun connectToDevice(server: GameServer) {
             viewModelScope.launch {
-                gameServer.gameState.collect {
-                    if (it == GameServer.Events.Connected) {
-                        _state.update {
-                            it.copy(
-                                navigateToGame = true,
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        fun connectToDevice(btDevice: BtDevice) {
-            Timber.d("Connect to $btDevice")
-            viewModelScope.launch {
-                repositoryImpl.connectToServer(btDevice)
             }
         }
 
