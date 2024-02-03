@@ -11,15 +11,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import pl.radoslav.core_ui.theme.TicTacToeTheme
 import pl.radoslav.game.implementation.findgame.presentation.guest.FindGameScreen
 import pl.radoslav.game.implementation.findgame.presentation.host.FindGameHostScreen
 import pl.radoslav.game.implementation.game.presentation.GameScreen
 import pl.radoslav.home.implementation.presentation.MainMenuScreen
-import pl.radoslav.core_ui.theme.TicTacToeTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     private val discoverabilityResultContract = registerForActivityResult(EnableBluetoothDiscoverability()) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,11 +51,17 @@ class MainActivity : ComponentActivity() {
 }
 
 class EnableBluetoothDiscoverability : ActivityResultContract<Int, Unit>() {
-    override fun createIntent(context: Context, input: Int): Intent {
+    override fun createIntent(
+        context: Context,
+        input: Int,
+    ): Intent {
         return Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE).apply {
             putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, input)
         }
     }
 
-    override fun parseResult(resultCode: Int, intent: Intent?) = Unit
+    override fun parseResult(
+        resultCode: Int,
+        intent: Intent?,
+    ) = Unit
 }
