@@ -123,7 +123,7 @@ class BluetoothService @Inject constructor(
     }
 
     private fun createConnection(bluetoothSocket: BluetoothSocket) {
-        bluetoothConnection = BluetoothConnection()
+        bluetoothConnection = BluetoothConnection(bluetoothSocket)
     }
 
     companion object {

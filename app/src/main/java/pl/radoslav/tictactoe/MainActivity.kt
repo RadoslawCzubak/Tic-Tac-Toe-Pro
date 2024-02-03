@@ -1,7 +1,5 @@
 package pl.radoslav.tictactoe
 
-import android.bluetooth.BluetoothAdapter
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,11 +8,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import pl.radoslav.bluetooth.BluetoothUI
-import pl.radoslav.tictactoe.feature.findgame.presentation.guest.FindGameScreen
-import pl.radoslav.tictactoe.feature.findgame.presentation.host.FindGameHostScreen
-import pl.radoslav.tictactoe.feature.game.presentation.GameScreen
-import pl.radoslav.tictactoe.feature.mainmenu.MainMenuScreen
-import pl.radoslav.tictactoe.ui.theme.TicTacToeTheme
+import pl.radoslav.core_ui.theme.TicTacToeTheme
+import pl.radoslav.game.implementation.findgame.presentation.guest.FindGameScreen
+import pl.radoslav.game.implementation.findgame.presentation.host.FindGameHostScreen
+import pl.radoslav.game.implementation.game.presentation.GameScreen
+import pl.radoslav.home.implementation.presentation.MainMenuScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
