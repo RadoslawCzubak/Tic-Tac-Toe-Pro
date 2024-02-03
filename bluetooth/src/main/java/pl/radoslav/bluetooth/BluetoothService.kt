@@ -1,6 +1,5 @@
 package pl.radoslav.bluetooth
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -10,7 +9,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import androidx.annotation.RequiresPermission
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
@@ -26,20 +24,20 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.time.Duration.Companion.seconds
 
+@SuppressLint("MissingPermission")
 class BluetoothService @Inject constructor(
     @ApplicationContext private val context: Context,
     private val bluetoothAdapter: BluetoothAdapter,
 ) {
-    private var bluetoothConnection: BluetoothConnection? = null
+    var bluetoothConnection: BluetoothConnection? = null
+        private set
 
     @SuppressLint("InlinedApi")
     @OptIn(FlowPreview::class)
-    @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_SCAN])
     fun discoverDevices(): Flow<BluetoothDevice> {
         return callbackFlow {
             val receiver =
                 object : BroadcastReceiver() {
-                    @SuppressLint("MissingPermission")
                     override fun onReceive(
                         context: Context,
                         intent: Intent,
@@ -48,7 +46,6 @@ class BluetoothService @Inject constructor(
                             BluetoothDevice.ACTION_FOUND -> {
                                 intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                                     ?.let {
-                                        Timber.d(it.toString())
                                         trySend(it)
                                     }
                             }
@@ -65,13 +62,12 @@ class BluetoothService @Inject constructor(
             .cancellable()
     }
 
-    @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
     suspend fun createBluetoothServer() {
         val serverSocket: BluetoothServerSocket? = bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(
             "TicTacToeServer",
             TIC_TAC_TOE_SERVER_UUID,
         )
-        suspendCancellableCoroutine { cont ->
+        val btSocket = suspendCancellableCoroutine { cont ->
             var shouldLoop = true
             while (shouldLoop) {
                 val socket: BluetoothSocket? =
@@ -97,14 +93,14 @@ class BluetoothService @Inject constructor(
                 }
             }
         }
+        createConnection(btSocket)
     }
 
-    @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
     suspend fun connectToDevice(bluetoothDevice: BluetoothDevice) {
         val socket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
             bluetoothDevice.createRfcommSocketToServiceRecord(TIC_TAC_TOE_SERVER_UUID)
         }
-        suspendCancellableCoroutine { cont ->
+        val btSocket = suspendCancellableCoroutine { cont ->
             bluetoothAdapter.cancelDiscovery()
 
             socket?.let { socket ->
@@ -120,14 +116,50 @@ class BluetoothService @Inject constructor(
                 }
             }
         }
+        createConnection(btSocket)
     }
 
     private fun createConnection(bluetoothSocket: BluetoothSocket) {
         bluetoothConnection = BluetoothConnection(bluetoothSocket)
     }
 
+    fun observeBluetoothState(): Flow<BluetoothState> = callbackFlow {
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(
+                context: Context,
+                intent: Intent,
+            ) {
+                when (intent.action ?: "") {
+                    BluetoothAdapter.ACTION_STATE_CHANGED -> {
+                        intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)
+                            .let {
+                                when (it) {
+                                    BluetoothAdapter.STATE_ON -> BluetoothState.On
+                                    BluetoothAdapter.STATE_TURNING_ON -> BluetoothState.TurningOn
+                                    BluetoothAdapter.STATE_TURNING_OFF -> BluetoothState.TurningOff
+                                    BluetoothAdapter.STATE_OFF -> BluetoothState.Off
+                                    else -> Unit
+                                }
+                            }
+                    }
+                }
+            }
+        }
+        context.registerReceiver(receiver, IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED))
+        awaitClose {
+            context.unregisterReceiver(receiver)
+        }
+    }
+
     companion object {
         val TIC_TAC_TOE_SERVER_UUID: UUID =
             UUID.fromString("483f9bd2-57f5-48f6-ab45-1748edfa2a77")
     }
+}
+
+sealed interface BluetoothState {
+    data object On : BluetoothState
+    data object TurningOn : BluetoothState
+    data object TurningOff : BluetoothState
+    data object Off : BluetoothState
 }

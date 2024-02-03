@@ -9,9 +9,8 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import pl.radoslav.bluetooth.BluetoothUI
 import pl.radoslav.core_ui.theme.TicTacToeTheme
-import pl.radoslav.game.implementation.findgame.presentation.guest.FindGameScreen
+import pl.radoslav.game.implementation.findgame.presentation.guest.FindGameClientScreen
 import pl.radoslav.game.implementation.findgame.presentation.host.FindGameHostScreen
-import pl.radoslav.game.implementation.game.presentation.GameScreen
 import pl.radoslav.home.implementation.presentation.MainMenuScreen
 
 @AndroidEntryPoint
@@ -26,7 +25,7 @@ class MainActivity : ComponentActivity() {
                         MainMenuScreen(navController)
                     }
                     composable("findgame") {
-                        FindGameScreen(navController)
+                        FindGameClientScreen(navController)
                     }
                     composable("host") {
                         FindGameHostScreen(
@@ -35,9 +34,6 @@ class MainActivity : ComponentActivity() {
                                 BluetoothUI.startAdvertising(this@MainActivity)
                             },
                         )
-                    }
-                    composable("game") {
-                        GameScreen()
                     }
                 }
             }
