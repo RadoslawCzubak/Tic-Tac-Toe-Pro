@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "pl.radoslav.tictactoe"
-        minSdk = 24
+        minSdk = 27
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -35,11 +35,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -63,6 +63,14 @@ ktlint {
 }
 
 dependencies {
+
+    implementation(project(":bluetooth"))
+    implementation(project(":game:api"))
+    implementation(project(":game:implementation"))
+    implementation(project(":core"))
+    implementation(project(":core-ui"))
+    implementation(project(":home:api"))
+    implementation(project(":home:implementation"))
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
