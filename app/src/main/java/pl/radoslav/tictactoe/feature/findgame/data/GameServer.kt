@@ -88,25 +88,7 @@ class GameServer
             }
 
             override fun run() {
-                var shouldLoop = true
-                while (shouldLoop) {
-                    val socket: BluetoothSocket? =
-                        try {
-                            Timber.d("RRR Socket's accept() loop")
-                            serverSocket?.accept()
-                        } catch (exception: IOException) {
-                            Timber.e("RRR Socket's accept() method failed", exception)
-                            shouldLoop = false
-                            null
-                        }
-                    Timber.d("RRR " + socket.toString())
-                    socket?.also {
-                        Timber.d("RRR Socket's accept() connected")
-                        manageMyConnectedSocket(it)
-                        serverSocket?.close()
-                        shouldLoop = false
-                    }
-                }
+
             }
 
             fun cancel() {

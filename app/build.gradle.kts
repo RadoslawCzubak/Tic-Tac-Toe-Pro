@@ -93,4 +93,7 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
     implementation("com.jakewharton.timber:timber:5.0.1")
+
+    implementation(project(":core"))
+    implementation(project(":bluetooth"))
 }

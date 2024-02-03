@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import pl.radoslav.bluetooth.BluetoothUI
 import pl.radoslav.tictactoe.feature.findgame.presentation.guest.FindGameScreen
 import pl.radoslav.tictactoe.feature.findgame.presentation.host.FindGameHostScreen
 import pl.radoslav.tictactoe.feature.game.presentation.GameScreen
@@ -33,12 +34,7 @@ class MainActivity : ComponentActivity() {
                         FindGameHostScreen(
                             navController = navController,
                             onMakeDiscoverable = {
-                                val requestCode = 1
-                                val discoverableIntent: Intent =
-                                    Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE).apply {
-                                        putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300)
-                                    }
-                                startActivityForResult(discoverableIntent, requestCode)
+                                BluetoothUI.startAdvertising(this@MainActivity)
                             },
                         )
                     }
