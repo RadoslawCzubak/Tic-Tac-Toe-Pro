@@ -5,7 +5,8 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import pl.radoslav.tictactoe.feature.findgame.domain.model.BtDevice
+import pl.radoslav.bluetooth.BluetoothRepository
+import pl.radoslav.bluetooth.BtDevice
 import javax.inject.Inject
 
 class DiscoverBluetoothDevices
