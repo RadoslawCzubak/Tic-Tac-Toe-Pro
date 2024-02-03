@@ -1,4 +1,4 @@
-package pl.radoslav.tictactoe.feature.findgame.presentation.guest
+package pl.radoslav.game.implementation.findgame.presentation.guest
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import pl.radoslav.tictactoe.feature.findgame.domain.model.BtDevice
+import pl.radoslav.bluetooth.BtDevice
 
 @Composable
 fun FindGameScreen(navController: NavController) {

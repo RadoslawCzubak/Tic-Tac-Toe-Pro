@@ -1,6 +1,6 @@
-package pl.radoslav.tictactoe.feature.findgame.presentation.guest
+package pl.radoslav.game.implementation.findgame.presentation.guest
 
-import pl.radoslav.tictactoe.feature.findgame.domain.model.BtDevice
+import pl.radoslav.bluetooth.BtDevice
 
 data class FindGameGuestState(
     val devicesFound: List<BtDevice> = emptyList(),

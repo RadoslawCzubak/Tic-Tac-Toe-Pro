@@ -1,4 +1,4 @@
-package pl.radoslav.tictactoe.feature.game.domain
+package pl.radoslav.game.implementation.game.domain
 
 enum class Player {
     O,

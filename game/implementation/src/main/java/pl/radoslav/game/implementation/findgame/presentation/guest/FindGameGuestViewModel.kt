@@ -1,4 +1,4 @@
-package pl.radoslav.tictactoe.feature.findgame.presentation.guest
+package pl.radoslav.game.implementation.findgame.presentation.guest
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import pl.radoslav.tictactoe.feature.findgame.data.BluetoothRepositoryImpl
-import pl.radoslav.tictactoe.feature.findgame.data.GameServer
-import pl.radoslav.tictactoe.feature.findgame.domain.model.BtDevice
-import pl.radoslav.tictactoe.feature.findgame.domain.usecase.DiscoverBluetoothDevices
+import pl.radoslav.bluetooth.BluetoothRepositoryImpl
+import pl.radoslav.bluetooth.BtDevice
+import pl.radoslav.bluetooth.GameServer
+import pl.radoslav.game.implementation.findgame.domain.usecase.DiscoverBluetoothDevices
 import timber.log.Timber
 import javax.inject.Inject
 

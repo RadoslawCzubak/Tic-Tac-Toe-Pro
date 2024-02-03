@@ -1,4 +1,4 @@
-package pl.radoslav.tictactoe.feature.findgame.domain.usecase
+package pl.radoslav.game.implementation.findgame.domain.usecase
 
 import android.util.Log
 import kotlinx.coroutines.TimeoutCancellationException

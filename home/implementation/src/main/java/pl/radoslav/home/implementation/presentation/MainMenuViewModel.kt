@@ -1,4 +1,4 @@
-package pl.radoslav.tictactoe.feature.mainmenu
+package pl.radoslav.home.implementation.presentation
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

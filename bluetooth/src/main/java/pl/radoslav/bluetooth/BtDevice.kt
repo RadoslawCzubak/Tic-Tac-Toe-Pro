@@ -1,4 +1,4 @@
-package pl.radoslav.tictactoe.feature.findgame.domain.model
+package pl.radoslav.bluetooth
 
 data class BtDevice(
     val name: String,

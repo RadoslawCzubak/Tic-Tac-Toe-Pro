@@ -1,4 +1,4 @@
-package pl.radoslav.tictactoe.feature.mainmenu
+package pl.radoslav.home.implementation.presentation
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button

@@ -1,4 +1,4 @@
-package pl.radoslav.tictactoe.feature.findgame.presentation.host
+package pl.radoslav.game.implementation.findgame.presentation.host
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
