@@ -1,4 +1,4 @@
-package pl.radoslav.tictactoe.ui.theme
+package pl.radoslav.core_ui.theme
 
 import android.app.Activity
 import android.os.Build

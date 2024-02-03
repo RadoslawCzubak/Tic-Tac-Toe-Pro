@@ -15,7 +15,7 @@ import pl.radoslav.game.implementation.findgame.presentation.guest.FindGameScree
 import pl.radoslav.game.implementation.findgame.presentation.host.FindGameHostScreen
 import pl.radoslav.game.implementation.game.presentation.GameScreen
 import pl.radoslav.home.implementation.presentation.MainMenuScreen
-import pl.radoslav.tictactoe.ui.theme.TicTacToeTheme
+import pl.radoslav.core_ui.theme.TicTacToeTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
